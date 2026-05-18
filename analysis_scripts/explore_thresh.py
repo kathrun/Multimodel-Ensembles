@@ -8,7 +8,7 @@ import numpy as np
 import multimodtools as mmt
 import matplotlib.pyplot as plt
 
-plt.style.use('fivethirtyeight')
+plt.style.use('seaborn')
 
 # Create arrays of lowered thresholds.
 thresh = .3
