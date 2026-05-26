@@ -117,7 +117,7 @@ def read_ccmcfile(filename):
         for v, x in zip(['bn', 'be', 'bz'], parts[-3:]):
             data['d'*is_dBdt + v][i] = x
 
-    # Mask Nans:
+    # Mask NaNs:
     for v in ['bn', 'be', 'bz']:
         data['d'*is_dBdt + v] = np.ma.masked_invalid(data['d'*is_dBdt + v])
 

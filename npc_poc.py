@@ -24,6 +24,7 @@ tables = {}
 for m in mmt.models:
     tables[mmt.models[m]] = mmt.build_table(m, **tab_kwargs)
 
+
 # Create NPC by counting the number of crossings in each bin
 # across all ensemble members (i.e., models)
 mod = np.zeros(tables['SWMF'].obsmax.size)
@@ -31,9 +32,8 @@ for tab in tables:
     mod += 1*tables[tab].bool
 
 npc_forecast = 1.1 * thresh * (mod>=2)
-npc_tab = BinaryEventTable(tables['SWMF'].tObs, tables['SWMF'].Obs,
-                           tables['SWMF'].time, npc_forecast, thresh,
-                           trange=mmt.tlims[event], window=20*60)
+npc_tab = BinaryEventTable(tables['SWMF'].tObs, tables['SWMF'].Obs, tables['SWMF'].time, 
+                           npc_forecast, thresh, trange=mmt.tlims[event], window=20*60)
 
 # Create a cool plot:
 fig = plt.figure(figsize=(10,7))

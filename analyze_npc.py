@@ -113,8 +113,7 @@ for group in args.mags:
 
     # Build table using times/dates and observed values from all included
     # events, stored in any of the other tables (but we'll use SWMF for ease.)
-    #npc_tab = BinaryEventTable(tables['SWMF'].tObs, tables['SWMF'].Obs,
-    #                           tables['SWMF'].time, npc_forecast,
+
     npc = BinaryEventTable(t_npc, tables['SWMF'].obsmax,
                            t_npc, npc_forecast, args.threshold, window=20*60,
                            verbose=False)

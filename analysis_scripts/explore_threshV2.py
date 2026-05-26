@@ -46,40 +46,23 @@ for m in mmt.models:
                   'pofd': pofd}
 
 # Create a figure to plot results:
-fig, axes = plt.subplots(2, 2, figsize=[8, 8])
+fig, axes = plt.subplots(1, 2, figsize=[20, 8])
 axes = axes.flatten()
 
 # Plot'em.
 for m in mmt.models:
-    axes[0].plot(threshes, results[m]['heidke'], label=mmt.models[m])
-    axes[1].plot(threshes, results[m]['bias'], label=None)
-    axes[2].plot(threshes, results[m]['pod'], label=None)
-    axes[3].plot(threshes, results[m]['pofd'], label=None)
+    axes[0].plot(threshes, results[m]['heidke'], label=mmt.models[m], linewidth = 5)
+    axes[1].plot(threshes, results[m]['bias'], label=None, linewidth = 5)
+
 
 # Details details.
-fig.legend(loc='lower center', ncol=3)
-labs = ('Heidke Skill Score', 'Bias', 'Prob. of Detection', 'False Alarm Rate')
+fig.legend(loc='lower center', ncol=5, title_fontsize=18, fontsize=15)
+labs = ('Heidke Skill Score', 'Bias')
 for ax, lab in zip(axes, labs):
-    ax.set_ylabel(lab)
-    ax.set_xlabel('dB/dt Threshold')
-fig.suptitle('Forecast vs. Model Threshold')
+    ax.set_ylabel(lab, fontsize=20)
+    ax.set_xlabel('dB/dt Threshold', fontsize = 20)
+    ax.yaxis.set_tick_params(labelsize=20)
+    ax.xaxis.set_tick_params(labelsize=20)
+fig.suptitle('Forecast vs. Model Threshold', fontsize = 33)
 
-# These values create a nice, tight figure with the figure legend:
-fig.subplots_adjust(top=0.949, bottom=0.167, left=0.107,
-                    right=0.972, hspace=0.26, wspace=0.286)
-
-
-# For finding max threshold
-for m in mmt.models:
-    y_h = results[m]['heidke'].argmax()
-    print(m, "heidke Max:", threshes[y_h])
-    y_p = results[m]['pod'].argmax()
-    print(m, "PoD Max:", threshes[y_p])
-    y_f = results[m]['pofd'].argmax()
-    print(m, "PoFD Max:", threshes[y_f], "\n")
-
-#Calculating optimized bias
-for m in mmt.models:
-        b_dist =  abs(1-(results[m]['bias']))
-        b_loc= b_dist.argmin()
-        print(m,"Optimized Bias:", threshes[b_loc])
+plt.show()
