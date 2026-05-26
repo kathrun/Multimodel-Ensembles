@@ -57,25 +57,26 @@ modmedian = np.vstack([t['9_SWMF'].modmax, t['2_LFM-MIX'].modmax, t[
 modmedian = np.median(modmedian, axis=0)
 
 # plotting
-plt.style.use('bmh')
-fig = plt.figure(figsize=(10, 7))
-a1, a2 = fig.subplots(2, 1)
-plt.tight_layout()
+plt.style.use('seaborn')
+fig = plt.figure(figsize=(10, 7), layout='constrained')
+a1, a2 = fig.subplots(2, 1, sharex=True)
+#plt.tight_layout()
+plt.tick_params(axis='both', labelsize=12)
 
-fig.suptitle(f"Event: {tab_kwargs['event_set'][0]} " +
-             f"Magnetometer(s): {tab_kwargs['mag_set']}", fontsize='16')
+fig.suptitle(f"Event {tab_kwargs['event_set'][0]} " +
+             f"Magnetometer: {tab_kwargs['mag_set']}", fontsize=18)
 
 # First plot: validation plot - each models max compared to ensemble mean
 for mod in mmt.modnames:
     a1.plot(plottime, t[mod].modmax, c=mmt.cols[mod],
             label=mmt.models[mod], alpha=0.75)
 a1.plot(plottime, modmean, c='black', linestyle='-', label='Ensemble Mean', linewidth=3.5)
-a1.plot(plottime, modmedian, c='black', linestyle='--', label='Ensemble Median', linewidth=3.5)
+a1.plot(plottime, modmedian, c='grey', linestyle='--', label='Ensemble Median', linewidth=3.5)
 
 
-a1.set_title('Ensemble Members')
-a1.set_ylabel('dB/dt')
-a1.set_xlabel('Time')
+a1.set_title('Ensemble Members', fontsize=15)
+a1.set_ylabel('dB/dt', fontsize=15)
+## a1.set_xlabel('Time')
 
 a1.legend(loc='upper right', edgecolor='white', framealpha=1)
 
@@ -86,9 +87,9 @@ a2.plot(plottime, t['9_SWMF'].obsmax, '-X', c='crimson', label='Observations',
 a2.plot(plottime, modmean, '-s', c='black', label='Ensemble Mean')
 a2.plot(plottime, modmedian, '--o', c='grey', label='Ensemble Median')
 
-a2.set_title('Ensemble Median vs Determinsitc')
-a2.set_ylabel('dB/dt')
-a2.set_xlabel('Time')
+a2.set_title('Ensemble Models', fontsize=15)
+a2.set_ylabel('dB/dt', fontsize=15)
+a2.set_xlabel('Time', fontsize=15)
 
 a2.legend(loc='upper right', edgecolor='white', framealpha=1)
 
