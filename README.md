@@ -16,10 +16,12 @@ headers.
 Ensemble data must be generated manually before performing analysis.
 Data is saved as Python pickles.
 
-Type this to get ...
+To generate the pickles, begin an ipython session from the top-level repository
+folder and use these commands:
 ```
-python command here from import to final command
+run analysis_scripts/gen_npc_mets.py  # Generates NPC data.
 ```
+
 ## Dependencies
 
 This table quickly summarizes what is needed:

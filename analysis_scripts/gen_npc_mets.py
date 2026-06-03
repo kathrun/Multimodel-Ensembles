@@ -28,55 +28,80 @@ import numpy as np
 from validator import BinaryEventTable
 import multimodtools as mmt
 
-npc = [1, 2, 3, 4, 5]
 
-# Create tables for all 5 models.
-tables = {}
-for m in mmt.models:
-    print([m])
-    tables[mmt.models[m]] = mmt.build_table(m, event_set='all', mag_set='all')
+def generate_mme(mag_set='all'):
+    '''
+    Given the mag_set and all thresholds, generate MMEs for 1 to 5 members.
+    The result is saved as a python pickle named,
+    mme_mags_<magset>.pkl
 
-# create tables for all npc.
-npc_tab = {}
+    ...which contains data as follows:
 
-# Setting up tables
-npc_size, obs_size = tables['SWMF'].obsmax.size, tables['SWMF'].Obs
-tstart = datetime(2000, 1, 1, 0, 0, 0)
-t_npc = [tstart + timedelta(minutes=i*20 + 10) for i in range(npc_size)]
-t_npc = np.array(t_npc)
+    mme['bias03']  # Bias for all n-member NPCs for threshold 0.3...
+    '''
 
-# Deterministic model data to the pickle
-# detm = {}
-# for v in ['pod', 'pofd', 'hss', 'bias']:
-#     detm[v] = []
-#     detm['pod'].append(npc_tab.calc_HR())
-#     detm['pofd'].append(npc_tab.calc_FARate())
-#     detm['hss'].append(npc_tab.calc_heidke())
-#     detm['bias'].append(npc_tab.calc_bias())
+    npc = [1, 2, 3, 4, 5]
+    threshes = [0.3, 0.7, 1.1, 1.5]
 
-# Creating NPC tables
-for n in npc:
-    mod = np.zeros(tables['SWMF'].obsmax.size)
-    for tab in tables:
-        mod += 1*tables[tab].bool
+    mme = {'n_members': npc, 'thresholds': threshes}
+    mets = ['pod', 'pofd', 'hss', 'bias']
 
-    npc_forecast = 1.1 * 0.3 * (mod >= [n])
-    npc_tab = BinaryEventTable(t_npc, tables['SWMF'].obsmax,
-                               t_npc, npc_forecast, 0.3,
-                               window=20*60, verbose=False)
+    # Loop over all thresholds:
+    for thresh in threshes:
 
-    mme = {'NPC': npc}
-    for v in ['pod', 'pofd', 'hss', 'bias']:
-        mme[v] = []
-    mme['pod'].append(npc_tab.calc_HR())
-    mme['pofd'].append(npc_tab.calc_FARate())
-    mme['hss'].append(npc_tab.calc_heidke())
-    mme['bias'].append(npc_tab.calc_bias())
-    print("Created NPC = ", [n])
+        suffix = f"{int(10*thresh):02d}"
+
+        for v in mets:
+            mme[v + suffix] = []
+
+        # Create tables for all 5 models.
+        tables = {}
+        for m in mmt.models:
+            print(m)
+            tables[mmt.models[m]] = mmt.build_table(m, event_set='all',
+                                                    mag_set='all',
+                                                    thresh=thresh)
+
+        # create tables for all npc.
+        npc_tab = {}
+
+        # Setting up tables
+        npc_size = tables['SWMF'].obsmax.size
+
+        # Create time array (actual date doesn't matter in Bin. Event Analysis)
+        tstart = datetime(2000, 1, 1, 0, 0, 0)
+        t_npc = [tstart + timedelta(minutes=i*20 + 10)
+                 for i in range(npc_size)]
+        t_npc = np.array(t_npc)
+
+        # Creating NPC tables
+        for n in npc:
+            mod = np.zeros(tables['SWMF'].obsmax.size)
+            # Loop over each model and count how many crossed the threshold for
+            # each 20 min window.
+            for tab in tables:
+                mod += 1*tables[tab].bool
+
+            # Create a forecast that is either zero if <n crossed or MORE than
+            # the threshold if >= n models crossed threshold.
+            npc_forecast = 1.1 * thresh * (mod >= [n])
+            npc_tab = BinaryEventTable(t_npc, tables['SWMF'].obsmax,
+                                       t_npc, npc_forecast, thresh,
+                                       window=20*60, verbose=False)
+
+            # Append result metrics to list of metrics in our dict.
+            mme['pod' + suffix].append(npc_tab.calc_HR())
+            mme['pofd' + suffix].append(npc_tab.calc_FARate())
+            mme['hss' + suffix].append(npc_tab.calc_heidke())
+            mme['bias' + suffix].append(npc_tab.calc_bias())
+            print(f"Created NPC = {n} {suffix}")
 
     # save to the pickle
-    # with open('npc_metrics.pkl', 'wb') as f:
-    # pickle.dump([mme], f)
+    with open(f'npc_metrics_mags_{mag_set}.pkl', 'wb') as f:
+        pickle.dump(mme, f)
 
-# Now loop through thresholds...
 
+if __name__ == "__main__":
+    generate_mme()
+    generate_mme('lo')
+    generate_mme('hi')
