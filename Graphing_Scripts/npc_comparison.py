@@ -1,10 +1,10 @@
 #/usr/bin/env python3
 '''
-Trying to recreate single magnetometer model comparison graph. 
+Recreates a single magnetometer model comparison graph for all models.
 '''
 
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt 
 
 from spacepy.plot import style, applySmartTimeTicks
 from validator import BinaryEventTable
