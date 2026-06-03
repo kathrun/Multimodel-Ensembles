@@ -11,6 +11,15 @@ The file format for many of these files are inconsistent or incorrect; the
 `fix_headers.py` script can and *has* been used to fix issues with file
 headers.
 
+## Generating Data
+
+Ensemble data must be generated manually before performing analysis.
+Data is saved as Python pickles.
+
+Type this to get ...
+```
+python command here from import to final command
+```
 ## Dependencies
 
 This table quickly summarizes what is needed:
