@@ -1,37 +1,48 @@
-#set up right but need proper Bias data then copy and past for the rest
+# Creates a plot to show the changes in NPC performance across all metrics for a single threshold. 
+'''
+Requires run analysis_scripts/gen_npc_mets.py
+'''
+
+import os
+import pickle
 
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
+# Open the pickles for all three mag sets
+metfile = 'npc_metrics_mags_all.pkl'
+if not os.path.exists(metfile):
+    metfile = 'analysis_scripts/npc_metrics_mags_all.pkl'
+if not os.path.exists(metfile):
+    raise FileNotFoundError('Cannot find pickled data. See docstring for halp')
+
+with open('npc_metrics_mags_all.pkl', 'rb') as f:
+    mme = pickle.load(f)
+
+# Make those plots!
+
+# Grab data from pickle
+npc = mme['n_members']
+
 # set style information
 plt.style.use('seaborn')
 
-
-# data for graphs
-npc = [1, 2, 3, 4, 5]
-
 # creating subplots
-fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, layout='constrained', sharex=True)
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, layout='constrained', figsize=(10,8))
+
 fig.suptitle('0.3nT/s Threshold', fontsize=33)
-fig.set_figwidth(16)
-fig.set_figheight(12)
 
 # PoD
-all = 0.151, -0.028, -0.241,-0.418,-0.597
-hi = 0.161, -0.013, -0.205, -0.373, -0.578
-low = 0.125, -0.064, -0.328, -0.523, -0.644
-
 # set labels and titles
 ax1.set_title('$\Delta$PoD', fontsize=26)
 ax1.yaxis.set_tick_params(labelsize=20)
 ax1.xaxis.set_major_locator(ticker.MultipleLocator(1))
 
-
 # plot mag groups
-ax1.plot(npc, all, 'C1', marker='o', markersize='10', linewidth=5)
-ax1.plot(npc, hi, '-C0', marker='o', markersize='10', linewidth=5)
-ax1.plot(npc, low, '-C2',marker='o', markersize='10', linewidth=5)
+ax1.plot(npc, mme['pod03'], 'C1', marker='o', markersize='10', linewidth=5)
+# ax1.plot(npc, hi, '-C0', marker='o', markersize='10', linewidth=5)
+# ax1.plot(npc, low, '-C2',marker='o', markersize='10', linewidth=5)
 
 # PoFD
 all = 0.112, -0.033, -0.085, -0.105, -0.109

@@ -3,11 +3,15 @@
 '''
 This script creates a mean forecast by averaging the max db_h/dt values in a
 twenty minutes time intervalfrom the five models used in Pulkkinen et al. 2013.
+Plots comparison of model performance of all five models and the mean, median, and observatios.
+Used as figure 1 in the paper. 
 '''
 
 import numpy as np
 import multimodtools as mmt
 import matplotlib.pyplot as plt
+
+from spacepy.plot import applySmartTimeTicks
 
 from argparse import ArgumentParser
 
@@ -58,13 +62,13 @@ modmedian = np.median(modmedian, axis=0)
 
 # plotting
 plt.style.use('seaborn')
-fig = plt.figure(figsize=(10, 7), layout='constrained')
+fig = plt.figure(figsize=(10, 8), layout='constrained')
 a1, a2 = fig.subplots(2, 1, sharex=True)
-#plt.tight_layout()
-plt.tick_params(axis='both', labelsize=12)
+plt.tick_params(axis='both', labelsize=15)
 
-fig.suptitle(f"Event {tab_kwargs['event_set'][0]} " +
-             f"Magnetometer: {tab_kwargs['mag_set']}", fontsize=18)
+fig.suptitle(f"Event {tab_kwargs['event_set'][0]} - " +
+             f"{tab_kwargs['mag_set']}", fontsize=20)
+applySmartTimeTicks(a1, plottime)
 
 # First plot: validation plot - each models max compared to ensemble mean
 for mod in mmt.modnames:
@@ -74,9 +78,9 @@ a1.plot(plottime, modmean, c='black', linestyle='-', label='Ensemble Mean', line
 a1.plot(plottime, modmedian, c='grey', linestyle='--', label='Ensemble Median', linewidth=3.5)
 
 
-a1.set_title('Ensemble Members', fontsize=15)
-a1.set_ylabel('dB/dt', fontsize=15)
-## a1.set_xlabel('Time')
+# a1.text(1 ,0 , 'Ensemble Members')
+
+a1.set_ylabel('$dB_H/dt$ ($nT$)', fontsize=15)
 
 a1.legend(loc='upper right', edgecolor='white', framealpha=1)
 
@@ -87,8 +91,9 @@ a2.plot(plottime, t['9_SWMF'].obsmax, '-X', c='crimson', label='Observations',
 a2.plot(plottime, modmean, '-s', c='black', label='Ensemble Mean')
 a2.plot(plottime, modmedian, '--o', c='grey', label='Ensemble Median')
 
-a2.set_title('Ensemble Models', fontsize=15)
-a2.set_ylabel('dB/dt', fontsize=15)
+#a2.text('Ensemble Models', 0.05, 0.95, fontsize=20)
+
+a2.set_ylabel('$dB_H/dt$ ($nT$)', fontsize=15)
 a2.set_xlabel('Time', fontsize=15)
 
 a2.legend(loc='upper right', edgecolor='white', framealpha=1)
