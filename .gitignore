@@ -17,3 +17,7 @@ Thumbs.db
 # Python Things #
 #################
 __pycache__
+
+*pkl
+
+*png
