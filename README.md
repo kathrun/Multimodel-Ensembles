@@ -18,6 +18,7 @@ Data is saved as Python pickles.
 
 To generate the pickles, begin an ipython session from the top-level repository
 folder and use these commands:
+
 ```
 run analysis_scripts/gen_npc_mets.py  # Generates NPC data.
 ```
