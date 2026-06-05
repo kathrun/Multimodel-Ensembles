@@ -28,16 +28,7 @@ parser.add_argument("-m", "--mag", type=str, default='YKC',
 # Process arguments
 args = parser.parse_args()
 
-# Set station names:
-names = {'ABK': 'Abisko', 'PBQ': 'Poste de la Baleine', 'SNK': 'Sanikiluaq',
-         'YKC': 'Yellowknife', 'NEW': 'Newport', 'OTT': 'Ottowa',
-         'WNG': 'Wingst'}
-
-# Set plot style:
-try:
-    plt.style.use('seaborn')
-except OSError:
-    plt.style.use('seaborn-v0_8')
+mmt.set_plot_params()
 
 # script options into function arguments?
 tab_kwargs = {'event_set': args.events, 'mag_set': args.mag, 'verbose': False}
@@ -77,7 +68,7 @@ fig = plt.figure(figsize=(10, 7), layout='constrained')
 a1, a2 = fig.subplots(2, 1, sharex=True)
 
 fig.suptitle(f"Event {tab_kwargs['event_set'][0]} - " +
-             f"{names[tab_kwargs['mag_set']]}", fontsize=20)
+             f"{mmt.names[tab_kwargs['mag_set']]}", fontsize=20)
 
 # First plot: validation plot - each models max compared to ensemble mean
 for mod in mmt.modnames:
