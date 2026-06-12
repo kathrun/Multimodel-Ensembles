@@ -42,7 +42,6 @@ def generate_mme(mag_set='all'):
 
     npc = [1, 2, 3, 4, 5]
     threshes = [0.3, 0.7, 1.1, 1.5]
-
     mme = {'n_members': npc, 'thresholds': threshes}
     mets = ['pod', 'pofd', 'hss', 'bias']
 
