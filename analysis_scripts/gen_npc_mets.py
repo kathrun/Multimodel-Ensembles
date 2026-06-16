@@ -99,10 +99,6 @@ def generate_mme(mag_set='all'):
             mme['bias' + suffix].append(npc_tab.calc_bias())
             print(f"Created NPC = {n} {suffix}")
 
-            # Create difference to compare model performance
-            mme['d_pod' + suffix] = np.array(mme['pod' + suffix] - tables['SWMF'].calc_HR())
-            print(mme['d_pod'])
-
     # save to the pickle
     with open(f'npc_metrics_mags_{mag_set}.pkl', 'wb') as f:
         pickle.dump(mme, f)
