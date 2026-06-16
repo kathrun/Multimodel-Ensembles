@@ -10,6 +10,7 @@ import datetime as dt
 
 import numpy as np
 from dateutil.parser import parse as par
+import matplotlib.pyplot as plt
 
 # Get install directory:
 if __name__ != '__main__':
@@ -30,6 +31,12 @@ models = {'2_LFM-MIX': 'LFM-MIX',
 modnames = list(models.keys())
 modnames.sort()
 
+# Set station names:
+names = {'ABK': 'Abisko', 'PBQ': 'Poste de la Baleine', 'SNK': 'Sanikiluaq',
+         'YKC': 'Yellowknife', 'NEW': 'Newport', 'OTT': 'Ottowa',
+         'WNG': 'Wingst'}
+
+# Hi/lo lat groupings:
 hilat = ['PBQ', 'SNK', 'ABK', 'YKC']  # 'HRN', 'IQA', 'MEA']
 lolat = ['WNG', 'NEW', 'OTT']  # 'FUR', 'FRD', 'FRN']
 
@@ -58,6 +65,23 @@ tlims = {1: (par('October 29th, 2003 06:00UT', ignoretz=True),
 # Store binary event threshold values:
 thres_dt = [0.3, 0.7, 1.1, 1.5]  # nT/s
 thres_db = [101.6, 213.6, 317.5, 416.7]  # nT
+
+
+def set_plot_params():
+    '''Call this to set a uniform plot style.'''
+
+    # Set plot style sheet:
+    try:
+        plt.style.use('seaborn')
+    except OSError:
+        plt.style.use('seaborn-v0_8')
+
+    plt.rcParams['axes.titlesize'] = 24
+    plt.rcParams['axes.labelsize'] = 20
+    plt.rcParams['lines.linewidth'] = 1
+    plt.rcParams['lines.markersize'] = 10
+    plt.rcParams['xtick.labelsize'] = 16
+    plt.rcParams['ytick.labelsize'] = 16
 
 
 def read_ccmcfile(filename):
