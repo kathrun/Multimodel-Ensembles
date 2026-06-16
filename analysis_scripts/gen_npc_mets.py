@@ -44,6 +44,7 @@ def generate_mme(mag_set='all'):
     threshes = [0.3, 0.7, 1.1, 1.5]
     mme = {'n_members': npc, 'thresholds': threshes}
     mets = ['pod', 'pofd', 'hss', 'bias']
+    diff = ['d_pod', 'd_pofd', 'd_hss']
 
     # Loop over all thresholds:
     for thresh in threshes:
@@ -52,6 +53,9 @@ def generate_mme(mag_set='all'):
 
         for v in mets:
             mme[v + suffix] = []
+
+        for d in diff:
+            mme[d + suffix] = []
 
         # Create tables for all 5 models.
         tables = {}
@@ -94,6 +98,10 @@ def generate_mme(mag_set='all'):
             mme['hss' + suffix].append(npc_tab.calc_heidke())
             mme['bias' + suffix].append(npc_tab.calc_bias())
             print(f"Created NPC = {n} {suffix}")
+
+            # Create difference to compare model performance
+            mme['d_pod' + suffix] = np.array(mme['pod' + suffix] - tables['SWMF'].calc_HR())
+            print(mme['d_pod'])
 
     # save to the pickle
     with open(f'npc_metrics_mags_{mag_set}.pkl', 'wb') as f:

@@ -1,3 +1,5 @@
+# TO-DO!!!! Use script from npc_bias branch to create pickles for this script. 
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker

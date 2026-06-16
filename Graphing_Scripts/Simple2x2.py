@@ -8,6 +8,7 @@ import os
 import pickle
 
 import numpy as np
+import multimodtools as mmt
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
@@ -71,67 +72,55 @@ hss_lo = np.array(mme_lo['hss03']) - detm['hss'][0]
 
 # Create the difference between determ and MME performance.
 # set style information
-plt.style.use('seaborn')
+mmt.set_plot_params()
 
 # creating subplots
-fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, layout='constrained',
-                                             figsize=(10, 8), sharex=True)
-plt.tick_params(axis='y', labelsize=15)
+fig = plt.figure(figsize=(11.82,  7.12))
+(a1, a2), (a3, a4) = fig.subplots(2, 2, sharex=True)
 
-fig.suptitle('0.3nT/s Threshold', fontsize=30)
+fig.suptitle('0.3nT/s Threshold', fontsize=24)
 
 # PoD
 # set labels and titles
-ax1.set_ylabel('$\Delta$PoD', fontsize=24)
-ax1.yaxis.set_tick_params(labelsize=20)
-ax1.xaxis.set_major_locator(ticker.MultipleLocator(1))
+a1.set_ylabel('$\Delta$PoD')
+a1.xaxis.set_major_locator(ticker.MultipleLocator(1))
 
 # plot mag groups
-ax1.plot(npc, pod_all, 'C1', marker='o', markersize='10', linewidth=5)
-ax1.plot(npc, pod_hi, '-C0', marker='o', markersize='10', linewidth=5)
-ax1.plot(npc, pod_lo, '-C2', marker='o', markersize='10', linewidth=5)
+a1.plot(npc, pod_all, 'C1', marker='o', label='All')
+a1.plot(npc, pod_hi, '-C0', marker='o', label='High')
+a1.plot(npc, pod_lo, '-C2', marker='o', label='Low')
 
 # PoFD
 # set labels and titles
-ax2.set_ylabel('-$\Delta$PoFD', fontsize=24)
-#ax2.yaxis.set_tick_params(labelsize=20)
+a2.set_ylabel('-$\Delta$PoFD')
 
 # plot mag groups
-ax2.plot(npc, pofd_all, 'C1', marker='o', markersize='10', linewidth=5)
-ax2.plot(npc, pofd_hi, '-C0', label='High', marker='o', markersize='10',
-         linewidth=5)
-ax2.plot(npc, pofd_lo, '-C2', label="Low", marker='o', markersize='10',
-         linewidth=5)
+a2.plot(npc, pofd_all, '-C1', marker='o')
+a2.plot(npc, pofd_hi, '-C0', marker='o')
+a2.plot(npc, pofd_lo, '-C2', marker='o')
 
 # HSS
 # set labels and titles
-ax3.set_ylabel('$\Delta$HSS', fontsize=24)
-ax3.set_xlabel('$N$ NPCs', fontsize=24)
-ax3.xaxis.set_tick_params(labelsize=20)
-ax3.yaxis.set_tick_params(labelsize=20)
+a3.set_ylabel('$\Delta$HSS')
+a3.set_xlabel('$N$ NPCs')
 
 # plot mag groups
-ax3.plot(npc, hss_all, 'C1', marker='o', markersize='10', linewidth=5)
-ax3.plot(npc, hss_hi, '-C0', marker='o', markersize='10', linewidth=5)
-ax3.plot(npc, hss_lo, '-C2', marker='o', markersize='10', linewidth=5)
+a3.plot(npc, hss_all, '-C1', marker='o')
+a3.plot(npc, hss_hi, '-C0', marker='o')
+a3.plot(npc, hss_lo, '-C2', marker='o')
 
 # set labels and titles
-ax4.set_ylabel('Bias', fontsize=24)
-ax4.set_xlabel('$N$ NPCs', fontsize=24)
-ax4.xaxis.set_tick_params(labelsize=20)
-ax4.yaxis.set_tick_params(labelsize=20)
-ax4.axhline(y=1, color='grey', linestyle="--")
+a4.set_ylabel('Bias')
+a4.set_xlabel('$N$ NPCs')
+a4.axhline(y=1, color='grey', linestyle="--")
 
 # plot mag groups
-ax4.plot(npc, mme_all['bias03'], '-C1', label='All', marker='o',
-         markersize='10', linewidth=5)
-ax4.plot(npc, mme_hi['bias03'], '-C0', label='High', marker='o',
-         markersize='10', linewidth=5)
-ax4.plot(npc, mme_lo['bias03'], '-C2', label="Low", marker='o',
-         markersize='10', linewidth=5)
+a4.plot(npc, mme_all['bias03'], '-C1', marker='o')
+a4.plot(npc, mme_hi['bias03'], '-C0', marker='o')
+a4.plot(npc, mme_lo['bias03'], '-C2', marker='o')
 
 # legend
-ax4.legend(loc='upper right', edgecolor='white', framealpha=1,
-           title='Magnetometers', title_fontsize=18, fontsize=15)
+a1.legend(loc='upper right', edgecolor='white', framealpha=1,
+          title='Magnetometers', title_fontsize=18, fontsize=15)
 
 plt.show()

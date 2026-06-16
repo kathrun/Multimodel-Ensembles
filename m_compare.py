@@ -3,10 +3,6 @@
 '''
 This script creates a mean forecast by averaging the max db_h/dt values in a
 twenty minutes time intervalfrom the five models used in Pulkkinen et al. 2013.
-<<<<<<< HEAD
-Plots comparison of model performance of all five models and the mean, median,
-and observations. Used as figure 1 in the paper.
-=======
 Plots comparison of model performance of all five models and the mean, median, and observatios.
 Used as figure 1 in the paper. 
 '''
@@ -33,6 +29,7 @@ parser.add_argument("-m", "--mag", type=str, default='YKC',
 args = parser.parse_args()
 
 mmt.set_plot_params()
+plt.rcParams['lines.linewidth'] = 2.5
 
 # script options into function arguments?
 tab_kwargs = {'event_set': args.events, 'mag_set': args.mag, 'verbose': False}
@@ -72,7 +69,7 @@ fig = plt.figure(figsize=(10, 7), layout='constrained')
 a1, a2 = fig.subplots(2, 1, sharex=True)
 
 fig.suptitle(f"Event {tab_kwargs['event_set'][0]} - " +
-             f"{mmt.names[tab_kwargs['mag_set']]}", fontsize=20)
+             f"{mmt.names[tab_kwargs['mag_set']]}", fontsize=24)
 
 # First plot: validation plot - each models max compared to ensemble mean
 for mod in mmt.modnames:
@@ -86,8 +83,8 @@ a2.plot(plottime, t['9_SWMF'].modmax, '-*', c='royalblue', label='SWMF',
         alpha=0.85)
 a2.plot(plottime, t['9_SWMF'].obsmax, '-X', c='crimson', label='Observations',
         alpha=0.85)
-a2.plot(plottime, modmean, '-s', c='black', label='Ensemble Mean')
-a2.plot(plottime, modmedian, '--o', c='grey', label='Ensemble Median')
+a2.plot(plottime, modmean, '-s', markersize=7, c='black', label='Ensemble Mean')
+a2.plot(plottime, modmedian, '--o', markersize=7, c='grey', label='Ensemble Median')
 
 # Set plot subtitles:
 a1.text(0.01, 0.93, 'Ensemble Members', fontsize=16, transform=a1.transAxes)
@@ -96,12 +93,14 @@ a2.text(0.01, 0.93, 'Ensemble Forecasts', fontsize=16, transform=a2.transAxes)
 # Touch up axes:
 for ax in (a1, a2):
     ax.set_ylabel('$dB_H/dt$ ($nT$)', fontsize=16)
-    ax.legend(loc='upper right', edgecolor='white', framealpha=1)
+    ax.legend(loc='upper right', ncol=2, edgecolor='white', framealpha=1)
     yrange = ax.get_ylim()
-    mult = 2 if yrange[1] - yrange[0] < 5 else 5
+    print(yrange)
+    mult = (yrange[1] - yrange[0])/3 if yrange[1] - yrange[0] < 5 else 5
+    print(mult)
+    mult = np.round(mult, decimals=2)
     ax.yaxis.set_major_locator(MultipleLocator(mult))
     ax.tick_params(axis='both', labelsize=15)
 applySmartTimeTicks(a2, plottime, dolabel=True)
 
 plt.show()
->>>>>>> cb39944206a6fbc085eb6ed7596f9bcec235ee58

@@ -78,8 +78,8 @@ def set_plot_params():
 
     plt.rcParams['axes.titlesize'] = 24
     plt.rcParams['axes.labelsize'] = 20
-    plt.rcParams['lines.linewidth'] = 1
-    plt.rcParams['lines.markersize'] = 10
+    plt.rcParams['lines.linewidth'] = 2.5
+    plt.rcParams['lines.markersize'] = 8
     plt.rcParams['xtick.labelsize'] = 16
     plt.rcParams['ytick.labelsize'] = 16
 
