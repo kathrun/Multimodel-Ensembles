@@ -1,81 +1,113 @@
+'''
+Requires run analysis_scripts/gen_npc_mets.py
+'''
+# Incomplete! Either update pickels or try looping, 
+
+import os
+import pickle
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
-# set style information
-plt.style.use('seaborn')
+# Open the pickles for all three mag sets
+metfile = 'npc_metrics_mags_all.pkl'
+if not os.path.exists(metfile):
+    metfile = 'analysis_scripts/npc_metrics_mags_all.pkl'
+if not os.path.exists(metfile):
+    raise FileNotFoundError('Cannot find pickled all mags data.'
+                            'See docstring.')
 
-# data for graphs
-npc = [1, 2, 3, 4, 5]
+with open('npc_metrics_mags_all.pkl', 'rb') as f:
+    mme_all = pickle.load(f)
 
-# PoD
-D1_all = 0.151, -0.028, -0.241, -0.418, -0.597
-D1_hi = 0.162, -0.013, -0.205, -0.373, -0.578
-D1_lo = 0.125, -0.064, -0.328, -0.523, -0.644
+metfile = 'npc_metrics_mags_hi.pkl'
+if not os.path.exists(metfile):
+    metfile = 'analysis_scripts/npc_metrics_mags_hi.pkl'
+if not os.path.exists(metfile):
+    raise FileNotFoundError('Cannot find pickled hi mags data. See docstring.')
 
-D5_all = 0.145, -0.146, -0.371, -0.502, -0.566
-D5_hi = 0.176, -0.072, -0.299, -0.435, -0.578
-D5_lo = 0.056, -0.36, -0.581, -0.695, -0.644
+with open('npc_metrics_mags_hi.pkl', 'rb') as f:
+    mme_hi = pickle.load(f)
 
-D9_all = 0.112, -0.212, -0.374, -0.45, -0.491
-D9_hi = 0.123, -0.158, -0.328, -0.412, -0.462
-D9_lo = 0.081, -0.373, -0.513, -0.562, -0.576
+metfile = 'npc_metrics_mags_lo.pkl'
+if not os.path.exists(metfile):
+    metfile = 'analysis_scripts/npc_metrics_mags_lo.pkl'
+if not os.path.exists(metfile):
+    raise FileNotFoundError('Cannot find pickled lo mags data. See docstring.')
 
-D13_all = 0.093, -0.176, -0.322, -0.356, -0.405
-D13_hi = 0.088, -0.146, -0.289, -0.333, -0.39
-D13_lo = 0.111, -0.272, -0.432, -0.432, -0.453
+with open('npc_metrics_mags_lo.pkl', 'rb') as f:
+    mme_lo = pickle.load(f)
 
+metfile = 'mean_metrics.pkl'
+if not os.path.exists(metfile):
+    metfile = 'analysis_scripts/mean_metrics.pkl'
+if not os.path.exists(metfile):
+    raise FileNotFoundError('Cannot find pickled deterministic data. '
+                            'See docstring for halp')
 
-# -PoFD
-F2_all = 0.112, -0.033, -0.085, -0.105, -0.109
-F2_hi = 0.152, -0.028, -0.12, -0.158, -0.165
-F2_lo =  0.095, -0.036, -0.071, -0.084, -0.086
+with open('mean_metrics.pkl', 'rb') as f:
+    detm, mean, medi = pickle.load(f)
 
-F6_all = 0.066, -0.031, -0.057, -0.061, -0.064
-F6_hi = 0.177, -0.049, -0.1, -0.109, -0.112
-F6_lo = 0.034, -0.021, -0.031, -0.033, -0.035
- 
-F10_all = 0.044, -0.026, -0.05, -0.057, -0.059
-F10_hi = 0.09, -0.033, -0.076, -0.089,-0.092
-F10_lo = -0.013, -0.021, -0.03,- 0.033, -0.034
+# Grab data from pickle
+npc = mme_all['n_members']
+thresh = detm['thresh']
 
-F14_all = 0.042, -0.026, -0.047, -0.051, -0.054
-F14_hi = 0.083, -0.026, -0.063, -0.07, -0.073
-F14_lo = 0.01, -0.028, -0.035, -0.038, -0.04
+# Grab deterministc and calculate difference for PoD, PoFD, and HSS.
+# Calculating each individual for now. Clear up with for loops
 
-# HSS
-H3_all = 0.032, 0.008, -0.15, -0.308, -0.489
-H3_hi = 0.075, 0.008, -0.119, -0.239, -0.386
-H3_lo =  -0.04, 0.002, -0.191, -0.391, -0.546
+# 0.3 nT/s
+pod_all = np.array(mme_all['pod03']) - detm['pod'][0]
+pod_hi = np.array(mme_hi['pod03']) - detm['pod'][0]
+pod_lo = np.array(mme_lo['pod03']) - detm['pod'][0]
 
-H7_all = 0.026, -0.087, -0.289, -0.443, -0.525
-H7_hi = 0.044, -0.016, -0.192, -0.327, -0.406
-H7_lo =  -0.052, -0.25, -0.484, -0.647, -0.697
+pofd_all = (np.array(mme_all['pofd03']) - detm['pofd'][0])*(-1)
+pofd_hi = (np.array(mme_hi['pofd03']) - detm['pofd'][0])*(-1)
+pofd_lo = (np.array(mme_lo['pofd03']) - detm['pofd'][0])*(-1)
 
-H11_all = 0.013, -0.161, -0.314, -0.407, -0.464
-H11_hi = -0.005, -0.115, -0.247, -0.334, -0.395
-H11_lo =  0.018, -0.294, -0.461, -0.536, -0.557
+hss_all = np.array(mme_all['hss03']) - detm['hss'][0]
+hss_hi = np.array(mme_hi['hss03']) - detm['hss'][0]
+hss_lo = np.array(mme_lo['hss03']) - detm['hss'][0]
 
-H15_all = -0.006, -0.123, -0.269, -0.311, -0.384
-H15_hi = -0.044, -0.114, -0.226, -0.276, -0.353
-H15_lo =  0.047, -0.169, -0.383, -0.377, -0.411
+# 0.7 nT/s
+pod_all = np.array(mme_all['pod07']) - detm['pod'][0]
+pod_hi = np.array(mme_hi['pod07']) - detm['pod'][0]
+pod_lo = np.array(mme_lo['pod07']) - detm['pod'][0]
 
-# Bias
-B4_all = 1.092, 0.754, 0.484, 0.286, 0.102 
-B4_hi = 1.001, 0.745, 0.511, 0.325, 0.117
-B4_lo = 1.306, 0.775, 0.42, 0.192, 0.066
+pofd_all = (np.array(mme_all['pofd07']) - detm['pofd'][0])*(-1)
+pofd_hi = (np.array(mme_hi['pofd07']) - detm['pofd'][0])*(-1)
+pofd_lo = (np.array(mme_lo['pofd07']) - detm['pofd'][0])*(-1)
 
-B8_all = 1.073, 0.545, 0.257, 0.115, 0.045
-B8_hi = 1.027, 0.571, 0.28, 0.132, 0.053
-B8_lo = 1.206, 0.479, 0.191, 0.067, 0.019
+hss_all = np.array(mme_all['hss07']) - detm['hss'][0]
+hss_hi = np.array(mme_hi['hss07']) - detm['hss'][0]
+hss_lo = np.array(mme_lo['hss07']) - detm['hss'][0]
 
-B12_all = 1.037, 0.437, 0.183, 0.081, 0.032
-B12_hi =  1.017, 0.469, 0.205, 0.092, 0.035
-B12_lo = 1.098, 0.343, 0.119, 0.049, 0.019
+#1.1 nT/s
+# Grab deterministc and calculate difference for PoD, PoFD, and HSS.
+pod_all = np.array(mme_all['pod11']) - detm['pod'][0]
+pod_hi = np.array(mme_hi['pod11']) - detm['pod'][0]
+pod_lo = np.array(mme_lo['pod11']) - detm['pod'][0]
 
-B16_all = 1.068, 0.405, 0.141, 0.08, 0.017
-B16_hi = 1.009, 0.421, 0.155, 0.089, 0.022
-B16_lo = 1.266, 0.351, 0.096, 0.053, 0
+pofd_all = (np.array(mme_all['pofd11']) - detm['pofd'][0])*(-1)
+pofd_hi = (np.array(mme_hi['pofd11']) - detm['pofd'][0])*(-1)
+pofd_lo = (np.array(mme_lo['pofd11']) - detm['pofd'][0])*(-1)
+
+hss_all = np.array(mme_all['hss11']) - detm['hss'][0]
+hss_hi = np.array(mme_hi['hss11']) - detm['hss'][0]
+hss_lo = np.array(mme_lo['hss11']) - detm['hss'][0]
+
+# 1.5 nT.s 
+pod_all = np.array(mme_all['pod15']) - detm['pod'][0]
+pod_hi = np.array(mme_hi['pod15']) - detm['pod'][0]
+pod_lo = np.array(mme_lo['pod15']) - detm['pod'][0]
+
+pofd_all = (np.array(mme_all['pofd15']) - detm['pofd'][0])*(-1)
+pofd_hi = (np.array(mme_hi['pofd15']) - detm['pofd'][0])*(-1)
+pofd_lo = (np.array(mme_lo['pofd15']) - detm['pofd'][0])*(-1)
+
+hss_all = np.array(mme_all['hss15']) - detm['hss'][0]
+hss_hi = np.array(mme_hi['hss15']) - detm['hss'][0]
+hss_lo = np.array(mme_lo['hss15']) - detm['hss'][0]
 
 
 # creating subplots

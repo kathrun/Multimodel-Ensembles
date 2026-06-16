@@ -3,8 +3,12 @@
 '''
 This script creates a mean forecast by averaging the max db_h/dt values in a
 twenty minutes time intervalfrom the five models used in Pulkkinen et al. 2013.
+<<<<<<< HEAD
+Plots comparison of model performance of all five models and the mean, median,
+and observations. Used as figure 1 in the paper.
+=======
 Plots comparison of model performance of all five models and the mean, median, and observatios.
-Used as figure 1 in the paper.
+Used as figure 1 in the paper. 
 '''
 
 import numpy as np
@@ -100,3 +104,4 @@ for ax in (a1, a2):
 applySmartTimeTicks(a2, plottime, dolabel=True)
 
 plt.show()
+>>>>>>> cb39944206a6fbc085eb6ed7596f9bcec235ee58

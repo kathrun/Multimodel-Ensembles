@@ -58,8 +58,6 @@ a2.legend(loc='best')
 
 a1.set_title(f"Multi-Model Forecast: {tab_kwargs['mag_set'][0]}")
 for ax in (a1, a2):
-    applySmartTimeTicks(ax, mmt.tlims[tab_kwargs['event_set'][0]],
-                        dolabel=ax is a2)
     ax.set_ylabel(r'$|\frac{dB_H}{dt}|$ ($nT/s$)')
     ax.hlines(tab_kwargs['thresh'], *mmt.tlims[tab_kwargs['event_set'][0]],
               linestyles='dashed', colors='k')
