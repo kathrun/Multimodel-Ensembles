@@ -123,4 +123,5 @@ a4.plot(npc, mme_lo['bias03'], '-C2', marker='o')
 a1.legend(loc='upper right', edgecolor='white', framealpha=1,
           title='Magnetometers', title_fontsize=18, fontsize=15)
 
+fig.tight_layout()
 plt.show()

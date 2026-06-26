@@ -82,7 +82,7 @@ for tnow, row in zip(thresh, (row1, row2, row3, row4)):
         # Set labels:
         if row is row1:
             ax.set_title(f'{labels[met]}')
-        ax.set_ylabel(f"{tnow:.1f}$nT/s$\nThreshold")
+        ax.set_ylabel(f"{tnow:.1f} $nT/s$\nThreshold")
         ax.set_xlabel('$N$ NPCs')
         ax.label_outer(True)
 
@@ -95,5 +95,12 @@ for tnow, row in zip(thresh, (row1, row2, row3, row4)):
         ax.plot(npc, met_hi, '-C0', marker='o')
         ax.plot(npc, met_lo, '-C2', marker='o')
 
+        ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
+
+
+fig.legend(["All Mags", "High Mags", 'Low Mags'], loc="lower center", ncols=3,
+           fontsize=15)
+
 fig.tight_layout()
+plt.savefig('test.png')
 plt.show()
