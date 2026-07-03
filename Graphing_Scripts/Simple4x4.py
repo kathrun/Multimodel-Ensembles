@@ -20,7 +20,7 @@ if not os.path.exists(metfile):
                             'See docstring.')
 
 with open('npc_metrics_mags_all.pkl', 'rb') as f:
-    mme_all = pickle.load(f)
+    mme_all, best_all = pickle.load(f)
 
 metfile = 'npc_metrics_mags_hi.pkl'
 if not os.path.exists(metfile):
@@ -29,7 +29,7 @@ if not os.path.exists(metfile):
     raise FileNotFoundError('Cannot find pickled hi mags data. See docstring.')
 
 with open('npc_metrics_mags_hi.pkl', 'rb') as f:
-    mme_hi = pickle.load(f)
+    mme_hi, best_hi = pickle.load(f)
 
 metfile = 'npc_metrics_mags_lo.pkl'
 if not os.path.exists(metfile):
@@ -38,7 +38,7 @@ if not os.path.exists(metfile):
     raise FileNotFoundError('Cannot find pickled lo mags data. See docstring.')
 
 with open('npc_metrics_mags_lo.pkl', 'rb') as f:
-    mme_lo = pickle.load(f)
+    mme_lo, best_lo = pickle.load(f)
 
 metfile = 'mean_metrics.pkl'
 if not os.path.exists(metfile):
@@ -59,23 +59,14 @@ mmt.set_plot_params()
 labels = {'hss': r'$\Delta$HSS', 'pod': r'$\Delta$PoD',
           'pofd': r'$\Delta$PoFD', 'bias': 'Bias'}
 
-fig = plt.figure(figsize=(13.6, 10))
-row1, row2, row3, row4 = fig.subplots(4, 4, sharex=True)
-# (a1, a2, a3, a4), (b1, b2, b3, b4), (c1, c2, c3, c4), (d1, d2, d3, d4) = \
-#    fig.subplots(4, 4, sharex=True)
-
-for tnow, row in zip(thresh, (row1, row2, row3, row4)):
+fig = plt.figure(1, figsize=(13.6, 10))
+fig.suptitle('Simple NPC', fontsize=24)
+fig.subplots_adjust(wspace=0.025, hspace=0.05)
+row1, row2, row3, row4 = fig.subplots(4, 4)
+for ithresh, (tnow, row) in enumerate(zip(thresh, (row1, row2, row3, row4))):
     # Get string version of our threshold:
     str_t = f"{10*tnow:02.0f}"
-    print(f"Working on threshold = {str_t}")
-
-    pofd_all = (np.array(mme_all['pofd03']) - detm['pofd'][0])
-    pofd_hi = (np.array(mme_hi['pofd03']) - detm['pofd'][0])
-    pofd_lo = (np.array(mme_lo['pofd03']) - detm['pofd'][0])
-
-    hss_all = np.array(mme_all['hss03']) - detm['hss'][0]
-    hss_hi = np.array(mme_hi['hss03']) - detm['hss'][0]
-    hss_lo = np.array(mme_lo['hss03']) - detm['hss'][0]
+    print(f"Working on NPC threshold = {str_t}")
 
     for ax, met in zip(row, ('pod', 'pofd', 'hss', 'bias')):
 
@@ -86,21 +77,67 @@ for tnow, row in zip(thresh, (row1, row2, row3, row4)):
         ax.set_xlabel('$N$ NPCs')
         ax.label_outer(True)
 
-        # Calculate difference in metrics:
-        met_all = np.array(mme_all[met+str_t]) - detm[met][0]
-        met_hi = np.array(mme_hi[met+str_t]) - detm[met][0]
-        met_lo = np.array(mme_lo[met+str_t]) - detm[met][0]
-
-        ax.plot(npc, met_all, '-C1', marker='o')
-        ax.plot(npc, met_hi, '-C0', marker='o')
-        ax.plot(npc, met_lo, '-C2', marker='o')
+        if met != 'bias':
+            met_all = np.array(mme_all[met+str_t]) - detm[met][ithresh]
+            met_hi = np.array(mme_hi[met+str_t]) - detm[met][ithresh]
+            met_lo = np.array(mme_lo[met+str_t]) - detm[met][ithresh]
+            
+            ax.plot(npc, met_all, '-C1', marker='o')
+            ax.plot(npc, met_hi, '-C0', marker='o')
+            ax.plot(npc, met_lo, '-C2', marker='o')
+        else:
+            ax.plot(npc, mme_all['bias'+str_t], '-C1', marker='o')
+            ax.plot(npc, mme_hi['bias'+str_t], '-C0', marker='o')
+            ax.plot(npc, mme_lo['bias'+str_t], '-C2', marker='o')
 
         ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
 
 
+fig.legend(["All Mags", "High Mags", 'Low Mags'], loc="lower center",
+           bbox_to_anchor=(0.5, 0.0), ncols=3, fontsize=15)
+
+# fig.tight_layout()
+plt.savefig('WIP_simple.png')
+
+
+# Best of figure
+fig = plt.figure(2, figsize=(13.6, 10))
+fig.subplots_adjust(wspace=0.025, hspace=0.05)
+fig.suptitle('Best of NPC', fontsize=24)
+row1, row2, row3, row4 = fig.subplots(4, 4, sharex=True)
+for ithresh, (tnow, row) in enumerate(zip(thresh, (row1, row2, row3, row4))):
+    # Get string version of our threshold:
+    str_t = f"{10*tnow:02.0f}"
+    print(f"Working on Best NPC threshold = {str_t}")
+
+    for ax, met in zip(row, ('pod', 'pofd', 'hss', 'bias')):
+
+        # Set labels:
+        if row is row1:
+            ax.set_title(f'{labels[met]}')
+        ax.set_ylabel(f"{tnow:.1f} $nT/s$\nThreshold")
+        ax.set_xlabel('$N$ NPCs')
+        ax.label_outer(True)
+
+        if met != 'bias':
+            met_all = np.array(best_all[met+str_t]) - detm[met][ithresh]
+            met_hi = np.array(best_hi[met+str_t]) - detm[met][ithresh]
+            met_lo = np.array(best_lo[met+str_t]) - detm[met][ithresh]
+            
+            ax.plot(npc, met_all, '-C1', marker='o')
+            ax.plot(npc, met_hi, '-C0', marker='o')
+            ax.plot(npc, met_lo, '-C2', marker='o')
+
+        else:
+            ax.plot(npc, best_all['bias'+str_t], '-C1', marker='o')
+            ax.plot(npc, best_hi['bias'+str_t], '-C0', marker='o')
+            ax.plot(npc, best_lo['bias'+str_t], '-C2', marker='o')
+
+        ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
+
 fig.legend(["All Mags", "High Mags", 'Low Mags'], loc="lower center", ncols=3,
            fontsize=15)
 
-fig.tight_layout()
-plt.savefig('test.png')
+plt.savefig('WIP_best.png')
+
 plt.show()

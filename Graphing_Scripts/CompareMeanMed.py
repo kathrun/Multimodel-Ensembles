@@ -15,6 +15,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+import multimodtools as mmt
 
 metfile = 'mean_metrics.pkl'
 if not os.path.exists(metfile):
@@ -28,9 +29,9 @@ with open('mean_metrics.pkl', 'rb') as f:
 #Graph the pickle
 # Get the threshold from the file.
 thresh = detm['thresh']  #  0.3, 0.7, 1.1, 1.5
-# set style information
-plt.style.use('seaborn')
 
+# set style information
+mmt.set_plot_params()
 
 # creating subplots
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, layout='constrained', figsize=(10,8))

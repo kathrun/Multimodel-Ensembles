@@ -43,9 +43,10 @@ def generate_mme(mag_set='all'):
     npc = [1, 2, 3, 4, 5]
     threshes = [0.3, 0.7, 1.1, 1.5]
     mme = {'n_members': npc, 'thresholds': threshes}
+    best = {'n_members': npc, 'thresholds': threshes}
     mets = ['pod', 'pofd', 'hss', 'bias']
-    diff = ['d_pod', 'd_pofd', 'd_hss']
-
+    # diff = ['d_pod', 'd_pofd', 'd_hss']
+    
     # Loop over all thresholds:
     for thresh in threshes:
 
@@ -54,19 +55,20 @@ def generate_mme(mag_set='all'):
         for v in mets:
             mme[v + suffix] = []
 
-        for d in diff:
-            mme[d + suffix] = []
+        for b in mets:
+            best[b + suffix] = []
 
         # Create tables for all 5 models.
         tables = {}
         for m in mmt.models:
             print(m)
             tables[mmt.models[m]] = mmt.build_table(m, event_set='all',
-                                                    mag_set='all',
+                                                    mag_set=mag_set,
                                                     thresh=thresh)
 
         # create tables for all npc.
         npc_tab = {}
+        best_tab = {}
 
         # Setting up tables
         npc_size = tables['SWMF'].obsmax.size
@@ -87,7 +89,7 @@ def generate_mme(mag_set='all'):
 
             # Create a forecast that is either zero if <n crossed or MORE than
             # the threshold if >= n models crossed threshold.
-            npc_forecast = 1.1 * thresh * (mod >= [n])
+            npc_forecast = 1.1 * thresh * (mod >= n)
             npc_tab = BinaryEventTable(t_npc, tables['SWMF'].obsmax,
                                        t_npc, npc_forecast, thresh,
                                        window=20*60, verbose=False)
@@ -99,9 +101,23 @@ def generate_mme(mag_set='all'):
             mme['bias' + suffix].append(npc_tab.calc_bias())
             print(f"Created NPC = {n} {suffix}")
 
+            # Create Best of forecast 
+            npc_best = 1.1 * thresh * ((mod >= n) | tables['SWMF'].bool)
+            best_tab = BinaryEventTable(t_npc, tables['SWMF'].obsmax,
+                                        t_npc, npc_best, thresh,
+                                        window=20*60, verbose=False)
+            
+            # Calculate metrics for best of
+            best['pod' + suffix].append(best_tab.calc_HR())
+            best['pofd' + suffix].append(best_tab.calc_FARate())
+            best['hss' + suffix].append(best_tab.calc_heidke())
+            best['bias' + suffix].append(best_tab.calc_bias())
+            print(f"Created Best of NPC = {n} {suffix}")
+
     # save to the pickle
     with open(f'npc_metrics_mags_{mag_set}.pkl', 'wb') as f:
-        pickle.dump(mme, f)
+        pickle.dump((mme, best), f)
+    print(f'Saved data to npc_metrics_mags_{mag_set}.pkl')
 
 
 if __name__ == "__main__":
