@@ -57,6 +57,7 @@ ax4.plot(thresh, detm['bias'], label='SWMF/Deterministic')
 ax4.plot(thresh, medi['bias'], label='Median')
 ax4.plot(thresh, mean['bias'], label='Mean')
 
+plt.savefig('WIP_MeanMed.png')
 plt.show()
 
 #To-do
